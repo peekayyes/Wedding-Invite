@@ -1,0 +1,529 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Georgia', 'Playfair Display', serif;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a0505 50%, #0a0a0a 100%);
+    color: #fff;
+    overflow-x: hidden;
+    min-height: 100vh;
+    position: relative;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 20% 50%, rgba(212, 175, 55, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 50%, rgba(196, 30, 58, 0.05) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Card Shuffle Animation */
+.shuffle-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: radial-gradient(circle, #2d0a0a 0%, #000 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    transition: opacity 0.5s ease;
+}
+
+.shuffle-container.fade-out {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.card-deck {
+    position: relative;
+    width: 200px;
+    height: 280px;
+}
+
+.card {
+    position: absolute;
+    width: 140px;
+    height: 200px;
+    background: linear-gradient(145deg, #fff 0%, #f0f0f0 100%);
+    border: 3px solid #d4af37;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.card::before {
+    content: '♥';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 60px;
+    color: #c41e3a;
+}
+
+.card-1 { animation: shuffle1 2s ease-in-out infinite; }
+.card-2 { animation: shuffle2 2s ease-in-out infinite; animation-delay: 0.1s; }
+.card-3 { animation: shuffle3 2s ease-in-out infinite; animation-delay: 0.2s; }
+.card-4 { animation: shuffle4 2s ease-in-out infinite; animation-delay: 0.3s; }
+.card-5 { animation: shuffle5 2s ease-in-out infinite; animation-delay: 0.4s; }
+
+@keyframes shuffle1 {
+    0%, 100% { transform: translate(-50%, -50%) rotate(0deg); z-index: 1; }
+    25% { transform: translate(-80%, -60%) rotate(-15deg); z-index: 5; }
+    50% { transform: translate(-50%, -50%) rotate(0deg); z-index: 1; }
+}
+
+@keyframes shuffle2 {
+    0%, 100% { transform: translate(-50%, -50%) rotate(0deg); z-index: 2; }
+    25% { transform: translate(20%, -70%) rotate(10deg); z-index: 5; }
+    50% { transform: translate(-50%, -50%) rotate(0deg); z-index: 2; }
+}
+
+@keyframes shuffle3 {
+    0%, 100% { transform: translate(-50%, -50%) rotate(0deg); z-index: 3; }
+    25% { transform: translate(-100%, -40%) rotate(-20deg); z-index: 5; }
+    50% { transform: translate(-50%, -50%) rotate(0deg); z-index: 3; }
+}
+
+@keyframes shuffle4 {
+    0%, 100% { transform: translate(-50%, -50%) rotate(0deg); z-index: 4; }
+    25% { transform: translate(40%, -50%) rotate(15deg); z-index: 5; }
+    50% { transform: translate(-50%, -50%) rotate(0deg); z-index: 4; }
+}
+
+@keyframes shuffle5 {
+    0%, 100% { transform: translate(-50%, -50%) rotate(0deg); z-index: 5; }
+    25% { transform: translate(-60%, -80%) rotate(-10deg); z-index: 5; }
+    50% { transform: translate(-50%, -50%) rotate(0deg); z-index: 5; }
+}
+
+/* Main Content */
+.invitation-content {
+    position: relative;
+    min-height: 100vh;
+    padding: 40px 20px;
+    opacity: 1;
+    transition: opacity 0.8s ease;
+}
+
+.invitation-content.hidden {
+    opacity: 0;
+    display: none;
+}
+
+.card-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        repeating-linear-gradient(45deg, transparent, transparent 100px, rgba(212, 175, 55, 0.03) 100px, rgba(212, 175, 55, 0.03) 200px);
+    pointer-events: none;
+    z-index: -1;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    background: linear-gradient(145deg, rgba(10, 10, 10, 0.95) 0%, rgba(20, 5, 5, 0.95) 100%);
+    border: 2px solid #d4af37;
+    border-radius: 30px;
+    padding: 60px 40px;
+    box-shadow: 0 30px 80px rgba(212, 175, 55, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    position: relative;
+}
+
+.container::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, #d4af37, #c41e3a, #d4af37);
+    border-radius: 30px;
+    z-index: -1;
+    opacity: 0.3;
+    filter: blur(10px);
+}
+
+/* Header */
+.invitation-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.crown-icon {
+    font-size: 48px;
+    margin-bottom: 20px;
+    color: #d4af37;
+    letter-spacing: 20px;
+}
+
+.couple-names {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    line-height: 1.4;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.groom, .bride {
+    color: #d4af37;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.heart {
+    font-size: 2rem;
+    color: #c41e3a;
+    animation: heartbeat 1.5s ease-in-out infinite;
+}
+
+@keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+
+.tagline {
+    font-size: 1.1rem;
+    color: #f0f0f0;
+    font-style: italic;
+}
+
+.section-title {
+    font-size: 2rem;
+    color: #d4af37;
+    margin-bottom: 30px;
+    text-align: center;
+    text-shadow: 0 2px 10px rgba(212, 175, 55, 0.5);
+}
+
+/* Countdown Section */
+.countdown-section {
+    margin-bottom: 50px;
+    padding: 40px 20px;
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(196, 30, 58, 0.1) 100%);
+    border-radius: 20px;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.countdown-timer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.time-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    padding: 20px 25px;
+    border-radius: 15px;
+    border: 2px solid #d4af37;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    min-width: 100px;
+    transition: transform 0.3s ease;
+}
+
+.time-unit:hover {
+    transform: translateY(-5px);
+}
+
+.time-value {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #d4af37;
+    text-shadow: 0 2px 10px rgba(212, 175, 55, 0.5);
+    line-height: 1;
+}
+
+.time-label {
+    font-size: 0.9rem;
+    color: #ccc;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-top: 8px;
+}
+
+.time-separator {
+    font-size: 2.5rem;
+    color: #c41e3a;
+    font-weight: 700;
+    margin: 0 5px;
+}
+
+/* Events Section */
+.events-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    margin-bottom: 50px;
+}
+
+.event-card {
+    position: relative;
+    background: linear-gradient(145deg, #fff 0%, #f5f5f5 100%);
+    color: #1a1a1a;
+    padding: 40px 30px;
+    border-radius: 15px;
+    border: 3px solid #d4af37;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.event-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(212, 175, 55, 0.4);
+}
+
+.event-card.highlight {
+    background: linear-gradient(145deg, #fff5f5 0%, #ffe6e6 100%);
+    border-color: #c41e3a;
+}
+
+.card-corner {
+    position: absolute;
+    font-size: 24px;
+    color: #c41e3a;
+}
+
+.card-corner.top-left { top: 10px; left: 10px; }
+.card-corner.top-right { top: 10px; right: 10px; }
+.card-corner.bottom-left { bottom: 10px; left: 10px; }
+.card-corner.bottom-right { bottom: 10px; right: 10px; }
+
+.event-card h2 {
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+    color: #1a1a1a;
+}
+
+.event-date {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #c41e3a;
+    margin-bottom: 10px;
+}
+
+.event-time {
+    font-size: 1.1rem;
+    color: #555;
+}
+
+/* Venue Section */
+.venue-section {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.venue-section h2 {
+    font-size: 2rem;
+    color: #d4af37;
+    margin-bottom: 20px;
+}
+
+.venue-name {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.venue-location {
+    font-size: 1.2rem;
+    color: #ccc;
+    margin-bottom: 30px;
+}
+
+/* Weather Widget */
+.weather-widget {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    padding: 25px 35px;
+    border-radius: 20px;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    margin: 30px auto;
+    max-width: 400px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.weather-icon {
+    font-size: 3rem;
+}
+
+.weather-info {
+    text-align: left;
+}
+
+.weather-temp {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #d4af37;
+    margin-bottom: 5px;
+}
+
+.weather-desc {
+    font-size: 1rem;
+    color: #ccc;
+}
+
+/* Amenities */
+.amenities {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin: 30px 0;
+    flex-wrap: wrap;
+}
+
+.amenity-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, rgba(212, 175, 55, 0.05) 100%);
+    padding: 15px 30px;
+    border-radius: 50px;
+    border: 1px solid rgba(212, 175, 55, 0.4);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.amenity-icon {
+    font-size: 1.8rem;
+}
+
+.amenity-text {
+    font-size: 1.1rem;
+    color: #f0f0f0;
+    font-weight: 500;
+}
+
+.directions-btn {
+    display: inline-block;
+    background: linear-gradient(145deg, #c41e3a 0%, #a01828 100%);
+    color: #fff;
+    padding: 15px 40px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 50px;
+    border: 2px solid #d4af37;
+    box-shadow: 0 8px 20px rgba(196, 30, 58, 0.4);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.directions-btn:hover {
+    background: linear-gradient(145deg, #d4af37 0%, #b8941f 100%);
+    transform: scale(1.05);
+    box-shadow: 0 12px 30px rgba(212, 175, 55, 0.5);
+}
+
+.directions-btn:focus {
+    outline: 3px solid #fff;
+    outline-offset: 3px;
+}
+
+.btn-icon {
+    margin-right: 8px;
+}
+
+/* Footer */
+.invitation-footer {
+    text-align: center;
+    padding-top: 30px;
+    border-top: 2px solid #d4af37;
+}
+
+.invitation-footer p {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    font-style: italic;
+}
+
+.decorative-hearts {
+    font-size: 1.5rem;
+    color: #c41e3a;
+    letter-spacing: 15px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 30px 20px;
+    }
+
+    .couple-names {
+        font-size: 1.8rem;
+    }
+
+    .crown-icon {
+        font-size: 36px;
+        letter-spacing: 15px;
+    }
+
+    .event-card {
+        padding: 30px 20px;
+    }
+
+    .event-card h2 {
+        font-size: 1.5rem;
+    }
+
+    .venue-section h2 {
+        font-size: 1.6rem;
+    }
+
+    .directions-btn {
+        padding: 12px 30px;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .couple-names {
+        font-size: 1.5rem;
+    }
+
+    .tagline {
+        font-size: 1rem;
+    }
+
+    .events-section {
+        grid-template-columns: 1fr;
+    }
+
+    .card {
+        width: 100px;
+        height: 140px;
+    }
+
+    .card::before {
+        font-size: 40px;
+    }
+}
