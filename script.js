@@ -1,32 +1,59 @@
 // Card shuffle animation and page transition
 document.addEventListener('DOMContentLoaded', () => {
     const loadingScene = document.getElementById('loading-scene');
-    const bgReveal = document.getElementById('bg-reveal');
+    const doorOverlay = document.getElementById('door-overlay');
+    const scannerLight = document.getElementById('scanner-light');
+    const kingCard = document.querySelector('.playing-card.card-king');
     
-    // Show background after king card flies
-    setTimeout(() => {
-        bgReveal.classList.remove('hidden');
-        bgReveal.classList.add('show');
-    }, 10000);
-    
-    // Hide loading scene
+    // Fade out loading scene to reveal doors (after shuffle ends)
     setTimeout(() => {
         loadingScene.classList.add('fade-out');
         setTimeout(() => {
             loadingScene.style.display = 'none';
         }, 500);
-    }, 10000);
+    }, 6500);
     
-    // Hide background reveal after paper appears
+    // Card moves to scanner after doors are visible
     setTimeout(() => {
-        bgReveal.style.display = 'none';
-    }, 11000);
+        const slot = document.querySelector('.scanner-slot');
+        const slotRect = slot.getBoundingClientRect();
+        const slotCenterX = slotRect.left + slotRect.width / 2;
+        const slotTopY = slotRect.top;
+        
+        const offsetX = slotCenterX - window.innerWidth / 2;
+        const offsetY = slotTopY - window.innerHeight / 2;
+        
+        kingCard.style.setProperty('--scanner-x', `calc(-50% + ${offsetX}px)`);
+        kingCard.style.setProperty('--scanner-y', `calc(-50% + ${offsetY}px)`);
+        kingCard.classList.add('inserting');
+    }, 7200);
+    
+    // Mini card slides into slot after king arrives
+    setTimeout(() => {
+        document.getElementById('scanner-card').classList.add('slide-in');
+    }, 8400);
+    
+    // Scanner accepts card
+    setTimeout(() => {
+        scannerLight.classList.add('accepted');
+    }, 8900);
+    
+    // Doors open after scanner accepts
+    setTimeout(() => {
+        doorOverlay.classList.add('opening');
+    }, 9500);
+    
+    // Remove door overlay after fully open
+    setTimeout(() => {
+        doorOverlay.style.display = 'none';
+    }, 11500);
     
     // Start countdown and weather
     setTimeout(() => {
         startCountdown();
         fetchWeather();
-    }, 11000);
+        document.body.classList.add('enable-scroll');
+    }, 11500);
 });
 
 // Countdown Timer
