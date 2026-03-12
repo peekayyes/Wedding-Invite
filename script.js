@@ -2,7 +2,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const loadingScene = document.getElementById('loading-scene');
     const doorOverlay = document.getElementById('door-overlay');
-    const scannerLight = document.getElementById('scanner-light');
     const kingCard = document.querySelector('.playing-card.card-king');
     
     // Fade out loading scene to reveal doors (after shuffle ends)
@@ -13,71 +12,115 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 500);
     }, 6500);
     
-    // Card moves to scanner after doors are visible
+    // Card moves to scanner with 3D flip
     setTimeout(() => {
-        const slot = document.querySelector('.scanner-slot');
-        const slotRect = slot.getBoundingClientRect();
-        const slotCenterX = slotRect.left + slotRect.width / 2;
-        const slotTopY = slotRect.top;
+        const nfc = document.querySelector('.scanner-nfc');
+        const nfcRect = nfc.getBoundingClientRect();
+        const nfcCenterX = nfcRect.left + nfcRect.width / 2;
+        const nfcCenterY = nfcRect.top + nfcRect.height / 2;
         
-        const offsetX = slotCenterX - window.innerWidth / 2;
-        const offsetY = slotTopY - window.innerHeight / 2;
+        const offsetX = nfcCenterX - window.innerWidth / 2;
+        const offsetY = nfcCenterY - window.innerHeight / 2;
         
         kingCard.style.setProperty('--scanner-x', `calc(-50% + ${offsetX}px)`);
         kingCard.style.setProperty('--scanner-y', `calc(-50% + ${offsetY}px)`);
         kingCard.classList.add('inserting');
     }, 7200);
     
-    // Mini card slides into slot after king arrives
+    // Mini card taps the scanner (contactless)
     setTimeout(() => {
-        document.getElementById('scanner-card').classList.add('slide-in');
-    }, 8400);
+        document.getElementById('scanner-card').classList.add('tap-in');
+    }, 8600);
     
-    // Scanner accepts card
+    // Ripple + NFC goes gold (scanning)
     setTimeout(() => {
-        scannerLight.classList.add('accepted');
+        document.getElementById('scanner-ripple').classList.add('active');
+        document.getElementById('scanner-nfc').classList.add('scanning');
     }, 8900);
     
-    // Doors open after scanner accepts
+    // NFC goes green (accepted) + status dot
+    setTimeout(() => {
+        const nfc = document.getElementById('scanner-nfc');
+        nfc.classList.remove('scanning');
+        nfc.classList.add('accepted');
+        document.getElementById('scanner-status').classList.add('accepted');
+    }, 9400);
+    
+    // Light leaks through door seam before opening
+    setTimeout(() => {
+        document.getElementById('seam-glow').classList.add('active');
+    }, 9600);
+    
+    // Doors open — CSS transition handles background fade
     setTimeout(() => {
         doorOverlay.classList.add('opening');
-    }, 9500);
-    
-    // Remove door overlay after fully open
-    setTimeout(() => {
-        doorOverlay.style.display = 'none';
-    }, 11500);
-    
-    // Start countdown and weather
-    setTimeout(() => {
-        startCountdown();
-        fetchWeather();
-        document.body.classList.add('enable-scroll');
-    }, 11500);
+        
+        // After door animation finishes (2s) + 1s delay, show content
+        setTimeout(() => {
+            // Fade out overlay smoothly
+            doorOverlay.style.transition = 'opacity 0.5s ease';
+            doorOverlay.style.opacity = '0';
+            setTimeout(() => {
+                doorOverlay.style.display = 'none';
+            }, 500);
+            
+            // Content appears
+            document.querySelectorAll('.vintage-paper').forEach(p => p.classList.add('emerged'));
+            document.querySelectorAll('.hero, .countdown-luxury, .events-luxury, .venue-luxury, .luxury-footer').forEach(el => el.classList.add('content-visible'));
+            
+            // Init features
+            startCountdown();
+            fetchWeather();
+            document.body.classList.add('enable-scroll');
+            initParticles();
+            initPetals();
+            initScrollReveal();
+            initParallax();
+            initTilt();
+            initTypewriter('"Our hearts were dealt."', 'hero-quote');
+        }, 3000); // 2s door open + 1s pause
+    }, 10000);
 });
 
-// Countdown Timer
+// Countdown Timer with flip animation
 function startCountdown() {
     const weddingDate = new Date('2026-04-23T10:30:00').getTime();
+    let prev = { days: '', hours: '', minutes: '', seconds: '' };
+    
+    function flipUpdate(id, value) {
+        const el = document.getElementById(id);
+        const current = el.querySelector('.flip-current');
+        const next = el.querySelector('.flip-next');
+        const val = String(value).padStart(2, '0');
+        
+        if (prev[id] === val) return;
+        prev[id] = val;
+        
+        next.textContent = val;
+        el.classList.remove('flipping');
+        void el.offsetWidth; // reflow
+        el.classList.add('flipping');
+        
+        setTimeout(() => {
+            current.textContent = val;
+            el.classList.remove('flipping');
+        }, 600);
+    }
     
     function updateCountdown() {
         const now = new Date().getTime();
         const distance = weddingDate - now;
         
-        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-        
-        document.getElementById('days').textContent = String(days).padStart(2, '0');
-        document.getElementById('hours').textContent = String(hours).padStart(2, '0');
-        document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
-        document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
-        
         if (distance < 0) {
             clearInterval(countdownInterval);
-            document.querySelector('.countdown-timer').innerHTML = '<p style="font-size: 2rem; color: #d4af37;">The Wedding Day is Here! 🎉</p>';
+            document.querySelector('.countdown-grid').innerHTML = '<p style="font-size: 2rem; color: #d4af37; grid-column: 1/-1;">The Wedding Day is Here! 🎉</p>';
+            return;
         }
+        
+        flipUpdate('days', Math.floor(distance / (1000 * 60 * 60 * 24)));
+        flipUpdate('hours', Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)));
+        flipUpdate('minutes', Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)));
+        flipUpdate('seconds', Math.floor((distance % (1000 * 60)) / 1000));
     }
     
     updateCountdown();
@@ -135,3 +178,224 @@ document.addEventListener('keydown', (e) => {
         }
     }
 });
+
+// Gold Floating Particles
+function initParticles() {
+    const canvas = document.getElementById('particles');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    
+    const particles = [];
+    const count = Math.min(40, Math.floor(window.innerWidth / 20));
+    
+    for (let i = 0; i < count; i++) {
+        particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            size: Math.random() * 3 + 1,
+            speedY: -(Math.random() * 0.5 + 0.1),
+            speedX: (Math.random() - 0.5) * 0.3,
+            opacity: Math.random() * 0.5 + 0.2,
+            flicker: Math.random() * Math.PI * 2
+        });
+    }
+    
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+            p.y += p.speedY;
+            p.x += p.speedX;
+            p.flicker += 0.02;
+            const alpha = p.opacity * (0.6 + 0.4 * Math.sin(p.flicker));
+            
+            if (p.y < -10) { p.y = canvas.height + 10; p.x = Math.random() * canvas.width; }
+            if (p.x < -10) p.x = canvas.width + 10;
+            if (p.x > canvas.width + 10) p.x = -10;
+            
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(212, 175, 55, ${alpha})`;
+            ctx.fill();
+            
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size * 2, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(212, 175, 55, ${alpha * 0.2})`;
+            ctx.fill();
+        });
+        requestAnimationFrame(animate);
+    }
+    
+    animate();
+    window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    });
+}
+
+// Scroll-triggered reveals with directional entrances
+function initScrollReveal() {
+    const dirMap = [
+        { sel: '.countdown-item', dir: 'reveal-up' },
+        { sel: '.event-item:first-child', dir: 'reveal-left' },
+        { sel: '.event-item:last-child', dir: 'reveal-right' },
+        { sel: '.venue-card', dir: 'reveal-scale' },
+        { sel: '.detail-item', dir: 'reveal-up' },
+        { sel: '.luxury-footer', dir: 'reveal-up' }
+    ];
+    
+    const targets = [];
+    dirMap.forEach(({ sel, dir }) => {
+        document.querySelectorAll(sel).forEach(el => {
+            el.classList.add('reveal', dir);
+            targets.push(el);
+        });
+    });
+    
+    // Also add directional reveals to vintage-paper sections (not hero)
+    document.querySelectorAll('.countdown-luxury .vintage-paper').forEach(el => {
+        el.classList.add('reveal', 'reveal-left');
+        targets.push(el);
+    });
+    document.querySelectorAll('.events-luxury .vintage-paper').forEach(el => {
+        el.classList.add('reveal', 'reveal-right');
+        targets.push(el);
+    });
+    document.querySelectorAll('.venue-luxury .vintage-paper').forEach(el => {
+        el.classList.add('reveal', 'reveal-up');
+        targets.push(el);
+    });
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, { threshold: 0.15 });
+    
+    targets.forEach(el => observer.observe(el));
+}
+
+// Typewriter effect
+function initTypewriter(text, elementId) {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+    el.textContent = '';
+    const cursor = document.createElement('span');
+    cursor.className = 'typewriter-cursor';
+    el.appendChild(cursor);
+    
+    let i = 0;
+    function type() {
+        if (i < text.length) {
+            el.insertBefore(document.createTextNode(text[i]), cursor);
+            i++;
+            setTimeout(type, 60 + Math.random() * 40);
+        } else {
+            setTimeout(() => cursor.remove(), 2000);
+        }
+    }
+    setTimeout(type, 500);
+}
+
+// Parallax scroll — sections only, not background
+function initParallax() {
+    const sections = document.querySelectorAll('.countdown-luxury, .events-luxury, .venue-luxury');
+    if (!sections.length) return;
+    
+    window.addEventListener('scroll', () => {
+        const scrollY = window.scrollY;
+        sections.forEach((sec, i) => {
+            const speed = 0.03 + i * 0.01;
+            const rect = sec.getBoundingClientRect();
+            if (rect.top < window.innerHeight && rect.bottom > 0) {
+                sec.style.transform = `translateY(${(rect.top - window.innerHeight) * speed}px)`;
+            }
+        });
+    }, { passive: true });
+}
+
+// 3D tilt on countdown items
+function initTilt() {
+    document.querySelectorAll('.countdown-item').forEach(item => {
+        item.addEventListener('pointermove', (e) => {
+            const rect = item.getBoundingClientRect();
+            const x = (e.clientX - rect.left) / rect.width - 0.5;
+            const y = (e.clientY - rect.top) / rect.height - 0.5;
+            item.style.transform = `perspective(400px) rotateY(${x * 15}deg) rotateX(${-y * 15}deg) translateY(-3px)`;
+        });
+        item.addEventListener('pointerleave', () => {
+            item.style.transform = '';
+        });
+    });
+}
+
+// Rose Petals
+function initPetals() {
+    const canvas = document.getElementById('petals');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    
+    const petals = [];
+    const count = Math.min(18, Math.floor(window.innerWidth / 40));
+    
+    for (let i = 0; i < count; i++) {
+        petals.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height - canvas.height,
+            size: Math.random() * 8 + 4,
+            speedY: Math.random() * 0.6 + 0.2,
+            speedX: (Math.random() - 0.5) * 0.4,
+            rotation: Math.random() * 360,
+            rotSpeed: (Math.random() - 0.5) * 2,
+            wobble: Math.random() * Math.PI * 2,
+            opacity: Math.random() * 0.3 + 0.15
+        });
+    }
+    
+    function drawPetal(p) {
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate((p.rotation * Math.PI) / 180);
+        ctx.globalAlpha = p.opacity;
+        
+        ctx.beginPath();
+        ctx.moveTo(0, -p.size);
+        ctx.bezierCurveTo(p.size * 0.8, -p.size * 0.5, p.size * 0.6, p.size * 0.5, 0, p.size);
+        ctx.bezierCurveTo(-p.size * 0.6, p.size * 0.5, -p.size * 0.8, -p.size * 0.5, 0, -p.size);
+        
+        const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, p.size);
+        grad.addColorStop(0, 'rgba(183, 110, 121, 0.9)');
+        grad.addColorStop(1, 'rgba(183, 110, 121, 0.3)');
+        ctx.fillStyle = grad;
+        ctx.fill();
+        ctx.restore();
+    }
+    
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        petals.forEach(p => {
+            p.y += p.speedY;
+            p.wobble += 0.02;
+            p.x += p.speedX + Math.sin(p.wobble) * 0.3;
+            p.rotation += p.rotSpeed;
+            
+            if (p.y > canvas.height + 20) {
+                p.y = -20;
+                p.x = Math.random() * canvas.width;
+            }
+            drawPetal(p);
+        });
+        requestAnimationFrame(animate);
+    }
+    
+    animate();
+    window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    });
+}

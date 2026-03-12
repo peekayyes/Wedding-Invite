@@ -21,11 +21,17 @@
 
     <!-- Door Reveal -->
     <div id="door-overlay" class="door-overlay">
+        <!-- Gold arch frame -->
+        <div class="door-arch"></div>
         <div class="door-frame">
             <div class="door-panel door-left">
                 <div class="door-wood-grain"></div>
-                <div class="door-raised-panel door-panel-top"></div>
-                <div class="door-raised-panel door-panel-bottom"></div>
+                <div class="door-raised-panel door-panel-top">
+                    <div class="panel-filigree"></div>
+                </div>
+                <div class="door-raised-panel door-panel-bottom">
+                    <div class="panel-filigree"></div>
+                </div>
                 <div class="door-knob door-knob-left">
                     <div class="knob-base"></div>
                     <div class="knob-handle"></div>
@@ -34,23 +40,47 @@
             </div>
             <div class="door-panel door-right">
                 <div class="door-wood-grain"></div>
-                <div class="door-raised-panel door-panel-top"></div>
-                <div class="door-raised-panel door-panel-bottom"></div>
+                <div class="door-raised-panel door-panel-top">
+                    <div class="panel-filigree"></div>
+                </div>
+                <div class="door-raised-panel door-panel-bottom">
+                    <div class="panel-filigree"></div>
+                </div>
                 <div class="door-knob door-knob-right">
                     <div class="knob-base"></div>
                     <div class="knob-handle"></div>
                     <div class="knob-keyhole"></div>
                 </div>
             </div>
-            <div class="door-seam"></div>
+            <div class="door-seam">
+                <div class="seam-glow" id="seam-glow"></div>
+            </div>
+            <div class="door-crest">
+                <span>P</span><span class="crest-amp">&</span><span>S</span>
+            </div>
         </div>
+        <!-- Frosted glass scanner panel -->
         <div class="card-scanner">
             <div class="scanner-card" id="scanner-card"></div>
-            <div class="scanner-slot"></div>
-            <div class="scanner-light" id="scanner-light"></div>
-            <div class="scanner-label">INSERT CARD</div>
+            <div class="scanner-nfc" id="scanner-nfc">
+                <svg viewBox="0 0 24 24" class="nfc-icon">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" fill="none" stroke="currentColor" stroke-width="0.5" opacity="0.15"/>
+                    <path d="M2 12a10 10 0 0 1 10-10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" class="nfc-wave nfc-wave-1"/>
+                    <path d="M5 12a7 7 0 0 1 7-7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" class="nfc-wave nfc-wave-2"/>
+                    <path d="M8 12a4 4 0 0 1 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" class="nfc-wave nfc-wave-3"/>
+                    <circle cx="12" cy="12" r="1.5" fill="currentColor" class="nfc-dot"/>
+                </svg>
+            </div>
+            <div class="scanner-ripple" id="scanner-ripple"></div>
+            <div class="scanner-status" id="scanner-status"></div>
+            <div class="scanner-label">Tap to Enter</div>
         </div>
     </div>
+
+    <!-- Gold Particles -->
+    <canvas id="particles" class="particles-canvas"></canvas>
+    <!-- Rose Petals -->
+    <canvas id="petals" class="petals-canvas"></canvas>
 
     <!-- Animated Background -->
     <div class="luxury-bg">
@@ -69,7 +99,7 @@
                     <span class="ampersand">&</span>
                     <span class="name-line">Sneha Radhakrishnan</span>
                 </h1>
-                <p class="hero-quote">"Our hearts were dealt."</p>
+                <p class="hero-quote" id="hero-quote"></p>
             </div>
         </div>
         <div class="scroll-indicator">↓</div>
@@ -82,19 +112,31 @@
                 <h2 class="section-heading">Counting Every Moment</h2>
                 <div class="countdown-grid">
                     <div class="countdown-item">
-                        <div class="countdown-number" id="days">00</div>
+                        <div class="countdown-number flip-container" id="days">
+                            <span class="flip-current">00</span>
+                            <span class="flip-next">00</span>
+                        </div>
                         <div class="countdown-label">Days</div>
                     </div>
                     <div class="countdown-item">
-                        <div class="countdown-number" id="hours">00</div>
+                        <div class="countdown-number flip-container" id="hours">
+                            <span class="flip-current">00</span>
+                            <span class="flip-next">00</span>
+                        </div>
                         <div class="countdown-label">Hours</div>
                     </div>
                     <div class="countdown-item">
-                        <div class="countdown-number" id="minutes">00</div>
+                        <div class="countdown-number flip-container" id="minutes">
+                            <span class="flip-current">00</span>
+                            <span class="flip-next">00</span>
+                        </div>
                         <div class="countdown-label">Minutes</div>
                     </div>
                     <div class="countdown-item">
-                        <div class="countdown-number" id="seconds">00</div>
+                        <div class="countdown-number flip-container" id="seconds">
+                            <span class="flip-current">00</span>
+                            <span class="flip-next">00</span>
+                        </div>
                         <div class="countdown-label">Seconds</div>
                     </div>
                 </div>
